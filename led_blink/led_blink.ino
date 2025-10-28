@@ -75,4 +75,3 @@ void loop() {
     handleBlink(i);
   }
 }
-//halla!
