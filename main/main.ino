@@ -1,11 +1,11 @@
-#ifndef STYRING_H
-#define STYRING_H
+#include "queue.h"
+#include "motor.h"
+#include "styring.h"
 
-#endif
 
 void setup()
 {
-
+    Serial.begin(9600);
 }
 
 
