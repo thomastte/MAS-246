@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <LiquidCrystal.h>
 
 //(RS, E, D4, D5, D6, D7)
