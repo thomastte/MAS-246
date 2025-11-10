@@ -19,7 +19,8 @@ public:
     void clearDown(int floor);
     bool emptyUp() const;
     bool emptyDown() const;
-    int workingDirection();
+    bool emptyUpAbove(float from) const;
+    bool emptyDownBelow(float from) const;
     int firstUp() const;
     int firstDown() const;
 private:

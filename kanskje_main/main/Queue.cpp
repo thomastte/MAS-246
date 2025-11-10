@@ -1,6 +1,10 @@
 #include "Queue.h"
 #include "Display.h"
 #include <Arduino.h>
+#include <math.h>
+
+
+
 
 //___________Knapper,_lys_og_joystick_før_settup_______________
 const int led[8] = {49, 48, 47, 46, 45, 44, 43, 42};
@@ -56,7 +60,8 @@ void Queue::DownRequestHall ()
 
 
 //_______________________________________________
-void Queue::addRequest(const Request& request) {
+void Queue::addRequest(const Request& request) 
+{
     int floor = request.floor();
     if (floor < 0 || floor >= NUM_FLOORS) return;
 
@@ -68,40 +73,22 @@ void Queue::addRequest(const Request& request) {
 
 
 
-//_______________________________________________
-int Queue::nextUp(float from) const 
+int Queue::nextUp(float from) const
 {
-  // må kanskje legge inn litt justering på hva den gotar for mindre nøyaktighet 
-    for (int i = from ; i < NUM_FLOORS; ++i) 
-    {
-      if (up_[i])
-      {
-        if (display_) display_->showFloor(i,15,0);
-        return i;
-      }
-    }
-    return -1;
+  int intfrom = round(from);
+    for (int i = intfrom; i < NUM_FLOORS; ++i) {
+        if (up_[i]) return i;
+    }                                    
 }
 
-int Queue::nextDown(float from) const 
+int Queue::nextDown(float from) const
 {
-  // må kanskje legge inn litt justering på hva den gotar for mindre nøyaktighet 
-    for (int i = from ; i >= 0; --i) 
-    {
-      if (down_[i])
-      {
-        if (display_) display_->showFloor(i,15,0);
-        return i;
-      }
+  int intfrom = round(from);
+    for (int i = intfrom; i >= 0; --i) {
+        if (down_[i]) return i;
     }
-    return -1;
+    return -1; 
 }
-
-
-
-
-
-
 
 
 
@@ -110,6 +97,7 @@ void Queue::clearUp(int floor)
 {
   up_[floor] = false;
 }
+
 void Queue::clearDown(int floor) 
 {
   down_[floor] = false;
@@ -141,42 +129,48 @@ bool Queue::emptyDown() const
     return true;
 }
 
-int Queue::workingDirection()
+bool Queue::emptyUpAbove(float from) const
 {
-  for (int i = 0; i < NUM_FLOORS; ++i)
-  {
-    if (up_[i])
-    {
-      if (display_) display_->showDirection(Dir::Up, 15, 1);
-      return 1;
+  int intfrom = round(from);
+    for (int i = intfrom; i < NUM_FLOORS; ++i) {
+        if (up_[i]) return false;
     }
-  }
-    
-  for (int i = 0; i < NUM_FLOORS; ++i)
-  {
-    if (down_[i])
-    {
-      if (display_) display_->showDirection(Dir::Down, 15, 1);
-      return -1;
-    }
-  }
-   return 0; 
+    return true;
 }
 
+bool Queue::emptyDownBelow(float from) const
+{
+  int intfrom = round(from);
+    for (int i = intfrom; i >= 0; --i) {
+        if (down_[i]) return false;
+    }
+    return true;
+}
 
 int Queue::firstUp() const 
 {
-  for (int i = 0; i < NUM_FLOORS; ++i)
+  int index = -1; 
+  for (int i = 0; i < 8; i++) 
   {
-    if (up_[i]) return i;
-  } 
+    if (up_[i]) 
+    {
+      index = i;
+      return index; 
+    }
+  }
 }
 
 int Queue::firstDown() const 
 {
-  for (int i = NUM_FLOORS - 1; i >= 0; --i)
+  int index = -1; 
+  for (int i = 7; i >= 0; i--) 
   {
-    if (down_[i]) return i;
-  } 
+    if (down_[i]) 
+    {
+      index = i;
+      return index; 
+    }
+  }
 }
+
 
