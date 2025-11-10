@@ -78,17 +78,30 @@ void Stepper::doorStop() {
 void Stepper::update() {
     switch(currentState) {
         case OPENING:
-            halfStep(true);
-            delay(3);  // sets speed of opening
+            for (int i = 0; i < 500; i++)
+            {
+                halfStep(true);
+                delay(3);  // sets speed of opening
+            }
             break;
             
         case CLOSING:
-            halfStep(false);
-            delay(3);  // sets speed of closing
+            for (int i = 0; i < 500; i++)
+            {
+                halfStep(false);
+                delay(3);  // sets speed of opening
+            }
             break;
             
         case STOPPED:
             // Do nothing, motor is stopped
             break;
     }
+}
+
+
+void Stepper::setup(float aCurrent, float bCurrent) {
+    // perform existing initialization and set currents
+    init();
+    setCurrent(aCurrent, bCurrent);
 }

@@ -27,6 +27,7 @@ public:
     void doorOpen();
     void doorClose();
     void doorStop();
+    void setup(float aCurrent = 0.5f, float bCurrent = 0.5f);
     void update();
     uint32_t position;
 

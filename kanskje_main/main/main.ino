@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <string.h>
 
 #include "Queue.h"
 #include "Request.h"
@@ -13,13 +14,17 @@ Encoder encoder;
 int workingDirection = 0;
 int stop;
 Stepper stepper;
+unsigned long door_timer;
+bool open = false;
 
 
 void setup() 
 {
   display.setup();
+  stepper.setup(0.5, 0.5);
   encoder.setup();
   queue.attachDisplay(&display);
+  Serial.begin(9600);
 
   for (int i = 0; i < 8; i++) 
   {
@@ -27,8 +32,6 @@ void setup()
     pinMode(led[i], OUTPUT);
     digitalWrite(led[i], LOW);
   }
-  
-
 }
 
 void loop() 
@@ -103,6 +106,10 @@ void loop()
     stop = queue.nextUp(encoder.getElevatorPosition());
     display.showDirection(Dir::Up, 15, 1);
     display.showFloor(stop, 15, 0);
+    stepper.doorOpen();
+    stepper.update();
+    door_timer = millis();
+    open = true;
   }
   else if (workingDirection == -1 && encoder.getElevatorPosition() - float(stop) > -0.02f && encoder.getElevatorPosition() - float(stop) < 0.02f)
   {
@@ -110,8 +117,26 @@ void loop()
     stop = queue.nextDown(encoder.getElevatorPosition());
     display.showDirection(Dir::Down, 15, 1);
     display.showFloor(stop, 15, 0);
+    stepper.doorOpen();
+    stepper.update();
+    door_timer = millis();
+    open = true;
   }
 
+  if (millis() - door_timer >= 5000 && open)
+  {
+    Serial.println(millis() - door_timer);
+    open = false;
+    stepper.doorClose();
+    stepper.update();
+  }
+  
 
+/*delay(5000);
+stepper.update();
+stepper.doorStop();
+delay(5000);
+stepper.update();
+stepper.doorClose();*/
 }
 
