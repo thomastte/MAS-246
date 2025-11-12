@@ -72,7 +72,7 @@ void Queue::addRequest(const Request& request)
 }
 
 
-
+// nå er det vanlig avrunding, må bare runde rett vei
 int Queue::nextUp(float from) const
 {
   int intfrom = round(from);

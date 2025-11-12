@@ -15,6 +15,31 @@ int stop;
 Stepper stepper;
 
 
+float elevatorPosition  = 0;
+int firstStop = 0;
+bool up = {false};
+bool down = {false};
+bool upAbove = {false};
+bool downBelow = {false};
+bool firstStopHit = {false};
+
+void newUpRound()
+{
+  workingDirection = 1;
+  firstStop = queue.firstUp();
+  stop = firstStop;
+  firstStopHit = {false};
+}
+
+void newDownRound()
+{
+  workingDirection = -1;
+  firstStop = queue.firstDown();
+  stop = firstStop;
+  firstStopHit = {false};
+}
+
+
 void setup() 
 {
   display.setup();
@@ -31,6 +56,8 @@ void setup()
 
 }
 
+
+
 void loop() 
 {
   int y = analogRead(yPin);
@@ -44,46 +71,68 @@ void loop()
   }
 
   encoder.ReadEncoder();
+  float elevatorPosition  = encoder.getElevatorPosition();
 
-  if (queue.emptyUp() && queue.emptyDown())
+  bool up = !queue.emptyUp();
+  bool down = !queue.emptyDown();
+  bool upAbove = !queue.emptyUpAbove(elevatorPosition);
+  bool downBelow = !queue.emptyDownBelow(elevatorPosition);
+
+  if (elevatorPosition - float(firstStop) > -0.02f && elevatorPosition - float(firstStop) < 0.02f)
+  {
+    firstStopHit = {true};
+  }
+  
+  if (!up && !down)
   {
     workingDirection = 0;
   }
-  else if (workingDirection != 1 && !queue.emptyUp() && queue.emptyDown())
+
+  if(firstStopHit)
   {
-    workingDirection = 1;
-  }
-  else if (workingDirection != -1 && queue.emptyUp() && !queue.emptyDown())
-  {
-    workingDirection = -1;
-  }
-  else if (workingDirection == 1 && queue.emptyUpAbove(encoder.getElevatorPosition()) && !queue.emptyDown())
-  {
-    workingDirection = -1;
-  }
-  else if (workingDirection == -1 && !queue.emptyUp() && queue.emptyDownBelow(encoder.getElevatorPosition()))
-  {
-    workingDirection = 1;
-  }
-  else if (workingDirection == -1 && queue.emptyUp() && !queue.emptyDown() && queue.emptyDownBelow(encoder.getElevatorPosition()))
-  {
-    workingDirection = -1;
-  }
-  else if (workingDirection == 1 && !queue.emptyUp() && queue.emptyDown() && queue.emptyUpAbove(encoder.getElevatorPosition()))
-  {
-    workingDirection = -1;
+    if (workingDirection == 0)
+    {
+      if (up)
+      {
+        newUpRound();
+      }
+      else if (down)
+      {
+        newDownRound();
+      }
+    }
+    else if (workingDirection == 1 && !upAbove)
+    {
+      if(down)
+      {
+        newDownRound();
+      }
+      else if (!down)
+      {
+        newUpRound();
+      }
+    }
+    else if (workingDirection == -1 && !downBelow)
+    {
+      if(up)
+      {
+        newUpRound();
+      }
+      else if (!up)
+      {
+        newDownRound();
+      }
+    }
   }
 
   switch (workingDirection)
   {
     case -1:
-        stop = queue.firstDown();
         display.showFloor(stop, 15, 0);
         display.showDirection(Dir::Down, 15, 1);
         break;
 
     case 1:
-        stop = queue.firstUp();
         display.showFloor(stop, 15, 0);
         display.showDirection(Dir::Up, 15, 1);
         break;
@@ -95,21 +144,21 @@ void loop()
   }
 
 
+  
+  
   //kjør til stop
 
-  if (workingDirection == 1 && encoder.getElevatorPosition() - float(stop) > -0.02f && encoder.getElevatorPosition() - float(stop) < 0.02f)
+  
+
+  if (workingDirection == 1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
   {
     queue.clearUp(stop);
     stop = queue.nextUp(encoder.getElevatorPosition());
-    display.showDirection(Dir::Up, 15, 1);
-    display.showFloor(stop, 15, 0);
   }
-  else if (workingDirection == -1 && encoder.getElevatorPosition() - float(stop) > -0.02f && encoder.getElevatorPosition() - float(stop) < 0.02f)
+  else if (workingDirection == -1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
   {
     queue.clearDown(stop);
     stop = queue.nextDown(encoder.getElevatorPosition());
-    display.showDirection(Dir::Down, 15, 1);
-    display.showFloor(stop, 15, 0);
   }
 
 
