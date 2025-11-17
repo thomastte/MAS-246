@@ -8,9 +8,14 @@
 #include "Encoder.h"
 #include "stepper.h"
 
+#include "DC.h"
+#include "PID.h"
+
 Display display(41, 40, 37, 36, 35, 34, 4);
 Queue queue;
 Encoder encoder;
+DC dc;
+PID pid;
 int workingDirection = 0;
 int stop;
 Stepper stepper;
@@ -63,6 +68,9 @@ void setup()
 
 void loop() 
 {
+  dc.setup();
+  pid.setup();
+
   int y = analogRead(yPin);
   if(y>700)
   {
