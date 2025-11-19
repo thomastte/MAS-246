@@ -39,7 +39,7 @@ void Encoder::ReadEncoder() {
   long count = encoderCount;
   interrupts();
 
-  float rotations = (float)count / 8400.0f;
+  float rotations = (float)count / 8384.0f;
   elevatorPosition = rotations;
   display.showPosition(rotations);
 }
