@@ -147,9 +147,9 @@ void loop()
   }
 
 
-  
-  
   //kjør til stop
+  
+  
 
   
 
