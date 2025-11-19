@@ -153,14 +153,14 @@ void loop()
 
   
 
-  if (workingDirection == 1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
+  if (!open && workingDirection == 1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
   {
     stepper.doorOpen();
     stepper.update();
     door_timer = millis();
     open = true;
   }
-  else if (workingDirection == -1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
+  else if (!open && workingDirection == -1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
   {
     stepper.doorOpen();
     stepper.update();
@@ -180,6 +180,9 @@ void loop()
         if (digitalRead(button[i]) == HIGH)
         {
           queue.addRequest(Request(i, Dir::Up));
+          display.showFloor(i, 0, 0);
+          display.showDirection(Dir::Up, 1, 0);
+          queue.nextUp(elevatorPosition);
         }
         
       }
@@ -194,6 +197,9 @@ void loop()
         if (digitalRead(button[i]) == HIGH)
         {
           queue.addRequest(Request(i, Dir::Down));
+          display.showFloor(i, 0, 0);
+          display.showDirection(Dir::Down, 1, 0);
+          queue.nextDown(elevatorPosition);
         }
       }
     }
@@ -205,12 +211,16 @@ void loop()
     open = false;
     stepper.doorClose();
     stepper.update();
+    for (int i = 0; i < 8; ++i)
+    {
+      digitalWrite(led[i], LOW);
+    }
     if (workingDirection == 1)
     {
       queue.clearUp(stop);
       stop = queue.nextUp(elevatorPosition);
     }
-    if (workingDirection == 1)
+    if (workingDirection == -1)
     {
       queue.clearDown(stop);
       stop = queue.nextDown(elevatorPosition);
