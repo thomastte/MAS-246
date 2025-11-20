@@ -43,11 +43,12 @@ void Display::showIdle() {
 }
 
 
-void Display::showPosition(float pos)
+void Display::showPosition(float pos, long count)
 {
   lcd_.setCursor(3, 0);
   lcd_.print(pos,2);
   lcd_.print(" ");
+  Serial.println(count);
 }
 
 void Display::showNothing(int spot, int line)
