@@ -1,5 +1,6 @@
-const int ;
-double motorSpeed = 3; //
+#include "PID.h"
+#include <Arduino.h>
+#include "Encoder.h"
 
 double kp = 0.8;
 double ki = 0.20;
@@ -10,26 +11,29 @@ double lastTime = 0;
 double integral = 0;
 double previousError = 0;
 
+double computePID(double error, double dt);
+
 void PID::setup() {
-  analogWrite(OUTPUT_PIN, 0);
+ 
   lastTime = millis();
 }
 
-void loop() {
+double PID::loop(float in, float pos) {
   double now = millis();
   double dt = (now - lastTime) / 1000.0;
   lastTime = now;
 
-  int raw = analogRead(INPUT_PIN);
-  double actual = map(raw, 0, 1023, 0, 255);
+  int raw = in;
+  double actual = pos;
 
   double error = setpoint - actual;
   double output = computePID(error, dt);
 
   output = constrain(output, 0, 255); 
-  analogWrite(OUTPUT_PIN, output);
+  
 
-  delay(300);
+  //delay(30);
+  return output;
 }
 
 double computePID(double error, double dt) {
@@ -38,6 +42,8 @@ double computePID(double error, double dt) {
   double D = (error - previousError) / dt;
 
   previousError = error;
-
-  return (kp * P) + (ki * integral) + (kd * D);
+  double Output = (kp * P) + (ki * integral) + (kd * D);
+  //Serial.print(Output);
+  //Serial.print(", ");
+  return Output;
 }

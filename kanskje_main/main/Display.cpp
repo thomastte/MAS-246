@@ -49,6 +49,7 @@ void Display::showPosition(float pos, long count)
   lcd_.print(pos,2);
   lcd_.print(" ");
   Serial.println(count);
+  //Serial.print(", ");
 }
 
 void Display::showNothing(int spot, int line)
