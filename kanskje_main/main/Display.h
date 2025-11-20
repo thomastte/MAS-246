@@ -16,7 +16,7 @@ public:
     void showFloor(int floor, int spot, int line);     // viser nåværende etasje
     void showDirection(Dir dir,int spot,int line);   // viser pil opp/ned
     void showIdle();               // viser "Står stille"
-    void showPosition(float pos);
+    void showPosition(float pos, long count);
     void showNothing(int spot, int line);
     
 
