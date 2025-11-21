@@ -171,6 +171,7 @@ void loop()
       display.showNothing(15, 1);
       break;
   }
+
   
 
   // kjør til stop
@@ -191,19 +192,23 @@ void loop()
     dc.moveElevator(1,0);
   }
 
-  if (!open && workingDirection == 1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
+  
+
+  if (!open && workingDirection == 1 && elevatorPosition - float(stop) > -0.01f && elevatorPosition - float(stop) < 0.01f)
   {
     
     go = false;
+    dc.moveElevator(1,0);
     stepper.doorOpen();
     stepper.update();
     door_timer = millis();
     open = true;
   }
-  else if (!open && workingDirection == -1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
+  else if (!open && workingDirection == -1 && elevatorPosition - float(stop) > -0.01f && elevatorPosition - float(stop) < 0.01f)
   {
     
     go = false;
+    dc.moveElevator(-1,0);
     stepper.doorOpen();
     stepper.update();
     door_timer = millis();

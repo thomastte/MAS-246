@@ -1,9 +1,9 @@
 #include "PID.h"
 #include "Encoder.h"
 
-double kp = 500;
-double ki = 1;
-double kd = 100;
+double kp = 800;
+double ki = 5;
+double kd = 150;
 
 double setpoint = 0;
 double lastTime = 0;
