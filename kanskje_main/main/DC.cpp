@@ -19,11 +19,11 @@
   {
     if (dir == 1)
     {
-      digitalWrite(phase, LOW);
+      digitalWrite(phase, LOW); //cw
     }
     else if (dir == -1)
     {
-      digitalWrite(phase, HIGH);
+      digitalWrite(phase, HIGH); //ccw
     }
-    analogWrite(enable, speed);
+    analogWrite(enable, fabs(speed));
   }

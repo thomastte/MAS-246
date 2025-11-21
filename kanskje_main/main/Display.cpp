@@ -48,7 +48,7 @@ void Display::showPosition(float pos, long count)
   lcd_.setCursor(3, 0);
   lcd_.print(pos,2);
   lcd_.print(" ");
-  Serial.println(count);
+  //Serial.println(count);
   //Serial.print(", ");
 }
 

@@ -26,13 +26,15 @@ bool open = false;
 float profilePos;
 float profileVel;
 
-float elevatorPosition  = 0;
+float elevatorPosition = 0;
 int firstStop = 0;
 bool up = {false};
 bool down = {false};
 bool upAbove = {false};
 bool downBelow = {false};
 bool firstStopHit = {false};
+bool go ={true};
+float motionDt;
 
 // --- Trapezoidal motion profile (ADDED) ---
 const float MAX_VEL = 0.2f;   // changes velocity profile
@@ -85,7 +87,7 @@ void setup()
 
 void loop() 
 {
-  sikteSignal();
+  
 
   int y = analogRead(yPin);
   if (y > 700)
@@ -98,7 +100,7 @@ void loop()
   }
 
   encoder.ReadEncoder();
-  float elevatorPosition  = encoder.getElevatorPosition();
+  elevatorPosition  = encoder.getElevatorPosition();
 
   bool up = !queue.emptyUp();
   bool down = !queue.emptyDown();
@@ -169,21 +171,30 @@ void loop()
       display.showNothing(15, 1);
       break;
   }
-
-  // kjør til stop
-  if(pid.loop(motion.getPosition(),elevatorPosition)>0)
-  {
-    dc.moveElevator(1, pid.loop(motion.getPosition(),elevatorPosition));
-  }
-  else if(pid.loop(motion.getPosition(),elevatorPosition)<0)
-  {
-    dc.moveElevator(-1, 0-pid.loop(motion.getPosition(),elevatorPosition));
-  }
   
 
+  // kjør til stop
+  if (go)
+  {
+    sikteSignal();
+    if(pid.loop(motion.getPosition(),elevatorPosition)>0)
+    {
+      dc.moveElevator(1, pid.loop(motion.getPosition(),elevatorPosition));//pid.loop(motion.getPosition(),elevatorPosition)
+    }
+    else if(pid.loop(motion.getPosition(),elevatorPosition)<0)
+    {
+      dc.moveElevator(-1,pid.loop(motion.getPosition(),elevatorPosition));//0-pid.loop(motion.getPosition(),elevatorPosition)
+    }
+  }
+  else
+  {
+    dc.moveElevator(1,0);
+  }
 
   if (!open && workingDirection == 1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
   {
+    
+    go = false;
     stepper.doorOpen();
     stepper.update();
     door_timer = millis();
@@ -191,6 +202,8 @@ void loop()
   }
   else if (!open && workingDirection == -1 && elevatorPosition - float(stop) > -0.02f && elevatorPosition - float(stop) < 0.02f)
   {
+    
+    go = false;
     stepper.doorOpen();
     stepper.update();
     door_timer = millis();
@@ -252,6 +265,9 @@ void loop()
       queue.clearDown(stop);
       stop = queue.nextDown(elevatorPosition);
     }
+    tMotion = 0.0f;
+    motionDt=0.0f;;
+    go = true;
   }
 
   /*
@@ -270,8 +286,9 @@ void sikteSignal()
   static int lastProfileStop = -1;
 
   unsigned long motionNow = millis();
-  float motionDt = (motionNow - lastProfileMs) / 1000.0f;   // seconds
+  motionDt = (motionNow - lastProfileMs) / 1000.0f;   // seconds
   lastProfileMs = motionNow;
+  
 
   if (workingDirection == 0)
   {
@@ -281,9 +298,10 @@ void sikteSignal()
   {
     // Only start a new profile if the target floor changed
     if (lastProfileStop != stop) {
-      motion.setTarget(encoder.getElevatorPosition(), (float)stop);
+      motion.setTarget(elevatorPosition, (float)stop);
       lastProfileStop = stop;
       tMotion = 0.0f;
+      motionDt = 0.0f;
     }
 
     // Only run / print while the profile is still active
@@ -296,7 +314,8 @@ void sikteSignal()
       profileVel = motion.getVelocity();
 
       // Debug output: time, pos, vel
-      
+      Serial.print(pid.loop(motion.getPosition(), elevatorPosition));
+      Serial.print(", ");
       Serial.print(tMotion);
       Serial.print(", ");
       Serial.print(profilePos);
@@ -305,6 +324,8 @@ void sikteSignal()
       Serial.print(", ");
       Serial.print(stop);
       Serial.print(", ");
+      Serial.println(elevatorPosition);
+      //Serial.println(", ");
 
       // TODO: use profileVel with DC + PID here if you want:
       // dc.setVelocitySetpoint(profileVel);

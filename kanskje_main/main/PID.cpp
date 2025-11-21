@@ -1,10 +1,9 @@
 #include "PID.h"
-#include <Arduino.h>
 #include "Encoder.h"
 
-double kp = 0.8;
-double ki = 0.20;
-double kd = 0.001;
+double kp = 500;
+double ki = 1;
+double kd = 100;
 
 double setpoint = 0;
 double lastTime = 0;
@@ -26,13 +25,13 @@ double PID::loop(float in, float pos) {
   int raw = in;
   double actual = pos;
 
-  double error = setpoint - actual;
+  double error = in - actual;
   double output = computePID(error, dt);
 
-  output = constrain(output, 0, 255); 
+  output = constrain(output, -255, 255); 
   
 
-  //delay(30);
+  delay(30);
   return output;
 }
 
@@ -43,7 +42,5 @@ double computePID(double error, double dt) {
 
   previousError = error;
   double Output = (kp * P) + (ki * integral) + (kd * D);
-  //Serial.print(Output);
-  //Serial.print(", ");
   return Output;
 }
