@@ -46,14 +46,14 @@ void Stepper::setCurrent(float aCurrent, float bCurrent) {
 void Stepper::halfStep(bool dir) {  
     dir ? (position++) : (position--);
     std::array<std::array<bool, 4>, 8> out = {
-        {0, 1, 0, 1},
-        {0, 0, 0, 1},
-        {1, 1, 0, 1},
-        {1, 1, 0, 0},
-        {1, 1, 1, 1},
-        {0, 0, 1, 1},
-        {0, 1, 1, 1},
-        {0, 1, 0, 0}
+        {0, 1, 0, 1}, //A
+        {0, 0, 0, 1}, //B
+        {1, 1, 0, 1}, //AB
+        {1, 1, 0, 0}, //A
+        {1, 1, 1, 1}, //AB
+        {0, 0, 1, 1}, //B
+        {0, 1, 1, 1}, //AB
+        {0, 1, 0, 0} //A
     };
     uint8_t state = position % 8;
     digitalWrite(aPhase, out[state][0]);
