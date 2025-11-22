@@ -10,4 +10,4 @@ This fix should be included in the libraries in the Git itself, but if it is not
 The other libraries used are TimerOne and Array, these should both also be in the Git, but may need to be installed seperately.
 
 ## To Run the Code
-With this fix in place, the code will run in its entirety when the sketch "_____" is opened and built to an arduino. This should be done from Arduino IDE for consistency. 
+With this fix in place, the code will run in its entirety when the sketch \src\main\main.ino is opened and built to an Arduino Mega 2560. This requires that the Arduino is connected to the host computer in a way that allows for serial communication. Additionally, this should be done from Arduino IDE for consistency. 
