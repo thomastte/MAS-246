@@ -1,5 +1,5 @@
 #include "VelocityProfile.h"
-#include <math.h>    // for fabsf()
+#include <math.h>
 float pos;
 
 VelocityProfile::VelocityProfile(float maxVel, float maxAcc)
@@ -34,7 +34,7 @@ void VelocityProfile::update(float dt)
 
     float vMag = fabsf(vel_);
 
-    // distance needed to stop with current speed and max acceleration
+    // distance needed to stop with max speed and max acceleration
     float dStop = (vMag * vMag) / (2.0f * aMax_);
 
     if (fabsf(distance) <= dStop) {
@@ -42,7 +42,7 @@ void VelocityProfile::update(float dt)
         vMag -= aMax_ * dt;
         if (vMag < 0.0f) vMag = 0.0f;
     } else {
-        // Can accelerate (up to vMax_)
+        // Can accelerate up to max speed
         vMag += aMax_ * dt;
         if (vMag > vMax_) vMag = vMax_;
     }
