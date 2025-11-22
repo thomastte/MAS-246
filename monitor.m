@@ -46,10 +46,17 @@ end
 clear s;
 %%
 clc; close all; 
+data(150,:) = data(149,:);
+data(292,:) = data(291,:);
+data(434,:) = data(433,:);
+data(510,:) = data(509,:); 
+data(583,:) = data(582,:); 
+data(659,:) = data(658,:); 
+data(854,:) = data(853,:); 
+
 power = data(:,1); %Pådrag fra PID
 start = 1; 
-endP = 669;
-
+endP = 943; %943
 elapTime = data([start:endP],2);
 elapTime = timeVals(start:endP);
 desPos = data([start:endP],3);
@@ -58,9 +65,7 @@ dest = data([start:endP],5);
 encCount = data([start:endP],6);
 Pos = encCount;
 
-Pos(203) = Pos(202);
-Pos(397:398) = Pos(396);
-%Pos(end) = Pos(end-1);
+
 
 fcut = 1e-50;
 fs = 1/mean(diff(elapTime));
@@ -72,22 +77,39 @@ VelFilt = lowpass(vel,fcut,fs);
 acc = gradient(VelFilt, elapTime);
 accFilt = lowpass(acc,fcut,fs);
 
+%plotting position data
 figure
-plot(elapTime, desPos,LineWidth=4)
+plot(elapTime, desPos,LineWidth=5,Color='#4682B4') %desired position
 hold on
-plot(elapTime,Pos,Color='r', LineWidth=2)
-ylabel('Desired Position')
+plot(elapTime,Pos,Color='#DC143C', LineWidth=2) %measured position
+ylabel('Position(floor)','FontSize',15)
+xlabel('Time(s)','FontSize',15)
 ylim([-0.1 7.2])
-hold on 
-yyaxis("right")
-ylim([-1 1])
-plot(elapTime, desVel,LineWidth=3)
-hold on
-plot(elapTime, vel,LineStyle="-",Color='g',LineWidth=2)
-hold on
-plot(elapTime, accFilt, LineStyle= "-", Color='m',LineWidth=2 )
-ylabel('Desired Velocity')
-
+legend('Desired Position', 'Measured Position','Location','north','FontSize', 12)
+title('Position of Cabin Over Time','FontSize',20)
 grid on
-xlabel('Time(s)')
-legend('Desired Position','Pos','Desired Velocity','Velocity','Acceleration')
+
+velCorr(920:end) = desVel(920:end);
+acc = gradient(velCorr, elapTime);
+accFilt = lowpass(acc, fcut, fs);
+
+%Plotting dynamic data
+figure
+subplot(2,1,1)
+plot(elapTime, desVel, LineWidth=5, Color='#4682B4')
+hold on
+plot(elapTime, velCorr, LineWidth=3, Color='#DC143C')
+grid on
+ylabel('Velocity (floors per second)', FontSize=12)
+xlabel('Time(s)',FontSize=12)
+legend('Desired Velocity', 'Measured Velocity','Location','southwest','FontSize',12)
+title('Velocity of Cabin Over Time',FontSize=20)
+
+subplot(2,1,2)
+plot(elapTime, accFilt, LineWidth=5,Color='#32CD32')
+ylabel('Acceleration (units per second^2)','FontSize',12)
+xlabel('Time(s)',FontSize=12)
+title('Acceleration of Cabin Over Time', FontSize=20)
+grid on
+
+
