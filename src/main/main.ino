@@ -36,14 +36,13 @@ bool firstStopHit = {false};
 bool go ={true};
 float motionDt;
 
-// --- Trapezoidal motion profile (ADDED) ---
+// velocity profile values
 const float MAX_VEL = 0.2f;   // changes velocity profile
 const float MAX_ACC = 0.05f;  // changes velocity profile
 
-VelocityProfile motion(MAX_VEL, MAX_ACC);  // profile object
+VelocityProfile motion(MAX_VEL, MAX_ACC);
 
 float tMotion = 0.0f;
-// --- end added ---
 
 void sikteSignal();
 void newUpRound()
@@ -73,7 +72,7 @@ void setup()
   queue.attachDisplay(&display);
   Serial.begin(9600);
 
-  lastProfileMs = millis(); // for velocity profile timing
+  lastProfileMs = millis();
 
   for (int i = 0; i < 8; i++) 
   {
@@ -287,7 +286,6 @@ void loop()
 
 void sikteSignal()
 {
-   // --- Trapezoidal motion towards current stop (ADDED) ---
   static int lastProfileStop = -1;
 
   unsigned long motionNow = millis();
@@ -297,11 +295,9 @@ void sikteSignal()
 
   if (workingDirection == 0)
   {
-    // No movement command, keep profile idle
   }
   else
   {
-    // Only start a new profile if the target floor changed
     if (lastProfileStop != stop) {
       motion.setTarget(elevatorPosition, (float)stop);
       lastProfileStop = stop;
@@ -309,7 +305,6 @@ void sikteSignal()
       motionDt = 0.0f;
     }
 
-    // Only run / print while the profile is still active
     if (motionDt > 0.0f && !motion.isFinished())
     {
       motion.update(motionDt);
@@ -332,11 +327,7 @@ void sikteSignal()
       Serial.println(elevatorPosition);
       //Serial.println(", ");
 
-      // TODO: use profileVel with DC + PID here if you want:
-      // dc.setVelocitySetpoint(profileVel);
-      // pid.update(...);
+
     }
   }
-  // --- end added ---
-
 }

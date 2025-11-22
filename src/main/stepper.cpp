@@ -94,7 +94,6 @@ void Stepper::update() {
             break;
             
         case STOPPED:
-            // Do nothing, motor is stopped
             break;
     }
 }
